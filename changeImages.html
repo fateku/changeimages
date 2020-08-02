@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant-TW">
 
 <head>
     <meta charset="UTF-8">
@@ -12,6 +12,7 @@
             height: 300px;
             overflow: hidden;
             margin: 0 auto;
+            margin-top: 150px;
         }
 
         ul {
@@ -123,53 +124,58 @@
             let slideNum = 0;
             let slideCount = $(".slides li").length;
             let lastIndex = slideCount - 1;
+    
             $(".dot li").eq(0).css("background", "white").siblings().css("background", "transparent");
             $(".dot li").mouseenter(function () {
-                slideNum = $(this).index();
-                show();
+        
+                showNumber.eq(iNow).trigger("click");
             })
-            function show() {
-                $(".dot li").eq(slideNum).css("background", "#fff").siblings().css("background", "transparent");
-                let move = 0 - 800 * slideNum;
-                $("ul.slides").css("left", move);
-            }
+         
             $("#prevSlide").click(function () {
-                slideNum--;
-                if (slideNum < 0) slideNum = lastIndex;
-                show();
+            
+                iNow--;
+                if (iNow < 0) iNow = showNumber.length - 1;
+                showNumber.eq(iNow).trigger("click");
             });
             $("#nextSlide").click(function () {
-                slideNum++;
-                if (slideNum > lastIndex) slideNum = 0;
-                show();
+                
+                iNow++;
+                if (iNow > showNumber.length - 1) iNow = 0;
+                showNumber.eq(iNow).trigger("click");
             });
+
             var wrapper = $(".wrapper"),
                 ul = wrapper.find("ul.slides"),
                 showNumber = wrapper.find("ul.dot li"),
-                oneWidth = wrapper.find("ul.slides li").eq(0).width();
+                oneWidth = wrapper.find("ul.slides li").eq(0).width(),
+                isPaused = false; //新增一個isPaused的flag給計時器用
             var timer = null;
             var iNow = 0;
             showNumber.on("click", function () {
+                $(this).css("background", "#fff").siblings().css("background", "transparent");
                 $(this).addClass("active").siblings().removeClass("active");
                 var index = $(this).index();
                 iNow = index;
                 ul.animate({
                     "left": -oneWidth * iNow,
                 })
-            })
+            });
             timer = setInterval(function () {
+              if(!isPaused) {
                 iNow++;
                 if (iNow > showNumber.length - 1) {
                     iNow = 0;
                 }
                 showNumber.eq(iNow).trigger("click");
-            }, 3000);
-        });
-        $(".wrapper").hover(function(){
-                $(this).clearInterval(timer);
+              }
+            }, 2000);
+
+            wrapper.hover(function(){
+                isPaused = true;
             },function(){
-                $(this).setInterval(timer,3000);
+                isPaused = false;
             })
+        });
     </script>
 </body>
 
